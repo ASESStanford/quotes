@@ -16,15 +16,15 @@ var db *sql.DB
 
 func main() {
 	var err error
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS 'ases_quotes' (" +
-		"'id' INTEGER PRIMARY KEY," +
-		"'quote' TEXT NOT NULL," +
-		"'person' TEXT NOT NULL" +
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS \"ases_quotes\" (" +
+		"\"id\" SERIAL PRIMARY KEY," +
+		"\"quote\" TEXT NOT NULL," +
+		"\"person\" TEXT NOT NULL" +
 		")")
 	if err != nil {
 		log.Fatal(err)
@@ -87,7 +87,7 @@ func getRandomQuote() (Quote, error) {
 }
 
 func quoteDeleteHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	_, err := db.Exec("DELETE FROM ases_quotes WHERE id=?", p.ByName("id"))
+	_, err := db.Exec("DELETE FROM ases_quotes WHERE id=$1", p.ByName("id"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Print(err)
@@ -149,7 +149,7 @@ func quoteGetHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params
 		}
 		quote = q.Quote
 	} else {
-		err = db.QueryRow("SELECT quote FROM ases_quotes WHERE id=? "+
+		err = db.QueryRow("SELECT quote FROM ases_quotes WHERE id=$1 "+
 			"LIMIT 1",
 			p.ByName("id"),
 		).Scan(&quote)
@@ -179,15 +179,9 @@ func quoteCreateHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 		return
 	}
 
-	result, err := db.Exec("INSERT INTO ases_quotes (quote,person) "+
-		"values (?,?)", nq.Quote, nq.Person)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Print(err)
-		return
-	}
-
-	id, err := result.LastInsertId()
+	var id int64
+	err = db.QueryRow("INSERT INTO ases_quotes (quote,person) "+
+		"values ($1,$2) RETURNING id", nq.Quote, nq.Person).Scan(&id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Print(err)
@@ -212,21 +206,21 @@ func quoteUpdateHandler(w http.ResponseWriter, r *http.Request, p httprouter.Par
 	// we can't just build strings by concatenation
 	// perhaps some better way in go that I don't know of
 	if nq.Quote != "" && nq.Person != "" {
-		_, err = db.Exec("UPDATE ases_quotes"+
-			"SET quote=?, person=?"+
-			"WHERE id=?",
+		_, err = db.Exec("UPDATE ases_quotes "+
+			"SET quote=$1, person=$2 "+
+			"WHERE id=$3",
 			nq.Quote, nq.Person, p.ByName("id"),
 		)
 	} else if nq.Person != "" {
-		_, err = db.Exec("UPDATE ases_quotes"+
-			"SET person=?"+
-			"WHERE id=?",
+		_, err = db.Exec("UPDATE ases_quotes "+
+			"SET person=$1 "+
+			"WHERE id=$2",
 			nq.Person, p.ByName("id"),
 		)
 	} else if nq.Quote != "" {
-		_, err = db.Exec("UPDATE ases_quotes"+
-			"SET quote=?"+
-			"WHERE id=?",
+		_, err = db.Exec("UPDATE ases_quotes "+
+			"SET quote=$1 "+
+			"WHERE id=$2",
 			nq.Quote, p.ByName("id"),
 		)
 	}

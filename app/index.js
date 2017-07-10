@@ -42,39 +42,6 @@ class QuoteList extends React.Component {
     });
   }
 
-  updateQuote(id, quote, person) {
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    return () => fetch(`/quotes/${id}`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id,
-        quote,
-        person
-      })
-    }).then(response => {
-      this.state.quotes = this.state.quotes.filter((_quote) => {
-        if(_quote.id === id) {
-          return {
-            id,
-            quote,
-            person
-          }
-        } else {
-          return _quote;
-        }
-      });
-
-      this.setState({
-        quotes: this.state.quotes
-      });
-    });
-  }
-
   addQuote() {
     let quote = document.getElementById('new-quote').value;
     let person= document.getElementById('new-person').value;
@@ -101,6 +68,8 @@ class QuoteList extends React.Component {
         this.setState({
           quotes: this.state.quotes
         });
+        document.getElementById('new-quote').value = '';
+        document.getElementById('new-person').value = '';
       });
   }
 
@@ -109,7 +78,6 @@ class QuoteList extends React.Component {
       return (
         <Quote quote={quote}
           onDelete={this.deleteQuote(quote.id)}
-          onUpdate={this.updateQuote(quote.id)}
         ></Quote>
       );
     })
@@ -134,6 +102,10 @@ class Quote extends React.Component {
       person: props.quote.person,
       id: props.quote.id
     };
+
+    this.onQuoteChange = this.onQuoteChange.bind(this);
+    this.onPersonChange = this.onPersonChange.bind(this);
+    this.onUpdate = this.onUpdate.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -156,6 +128,21 @@ class Quote extends React.Component {
     });
   }
 
+  onUpdate() {
+    return fetch(`/quotes/${this.state.id}`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: this.state.id,
+        quote: this.state.quote,
+        person: this.state.person
+      })
+    });
+  }
+
   render() {
     let quote = this.props.quote;
 
@@ -163,7 +150,7 @@ class Quote extends React.Component {
       <div className="quote">
         <input type="text" name="quote" onChange={this.onQuoteChange} value={this.state.quote}/>
         <input type="text" name="person" onChange={this.onPersonChange} value={this.state.person}/>
-        <button onClick={this.props.onUpdate}>Update</button>
+        <button onClick={this.onUpdate}>Update</button>
         <button onClick={this.props.onDelete}>Delete</button>
       </div>
     )
