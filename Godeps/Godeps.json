@@ -9,6 +9,16 @@
 			"Rev": "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e"
 		},
 		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-173-gdd1fe20",
+			"Rev": "dd1fe2071026ce53f36a39112e645b4d4f5793a4"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "go1.0-cutoff-173-gdd1fe20",
+			"Rev": "dd1fe2071026ce53f36a39112e645b4d4f5793a4"
+		},
+		{
 			"ImportPath": "github.com/mattn/go-sqlite3",
 			"Comment": "v1.1.0-69-g38ee283",
 			"Rev": "38ee283dabf11c9cbdb968eebd79b1fa7acbabe6"
