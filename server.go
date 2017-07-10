@@ -21,10 +21,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, err = db.Exec("CREATE TABLE IF NOT EXISTS `ases_quotes` (" +
-		"`id` INTEGER PRIMARY KEY," +
-		"`quote` TEXT NOT NULL," +
-		"`person` TEXT NOT NULL" +
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS 'ases_quotes' (" +
+		"'id' INTEGER PRIMARY KEY," +
+		"'quote' TEXT NOT NULL," +
+		"'person' TEXT NOT NULL" +
 		")")
 	if err != nil {
 		log.Fatal(err)
