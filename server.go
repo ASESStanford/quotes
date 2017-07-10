@@ -7,6 +7,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -39,7 +40,7 @@ func main() {
 	router.DELETE("/quotes/:id", quoteDeleteHandler)
 	router.NotFound = http.FileServer(http.Dir("public"))
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
 }
 
 type Quote struct {
