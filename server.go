@@ -35,7 +35,7 @@ func main() {
 	router := httprouter.New()
 	router.GET("/quotes", quotesGetHandler)
 	router.GET("/quotes/:id", quoteGetHandler)
-	router.GET("/slack/quote", slackQuoteCommandHandler)
+	router.POST("/slack/quote", slackQuoteCommandHandler)
 	router.POST("/quotes", quoteCreateHandler)
 	router.POST("/quotes/:id", quoteUpdateHandler)
 	router.DELETE("/quotes/:id", quoteDeleteHandler)
