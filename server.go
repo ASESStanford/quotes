@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
@@ -17,9 +18,8 @@ var db *sql.DB
 
 func main() {
 	var err error
-	db, err = sql.Open("sqlite3", "db.sqlite3")
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Print("HELLO")
 		log.Fatal(err)
 	}
 
